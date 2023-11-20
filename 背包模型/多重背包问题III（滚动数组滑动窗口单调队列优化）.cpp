@@ -1,35 +1,31 @@
-
-//滚动数组写法
-
 #include <iostream>
-
+#include <cstring>
 using namespace std;
-
-const int N = 1010, M = 20010;
-
-int n, m;
-int v[N], w[N], s[N];
-int f[2][M];
-int q[M];
-
+const int N = 20100;
+int q[N];
+int f[N];
+int g[N];
+int n , m;
 int main()
 {
     cin >> n >> m;
-    for (int i = 1; i <= n; ++ i) cin >> v[i] >> w[i] >> s[i];
-    for (int i = 1; i <= n; ++ i)
+    for(int i = 0 ; i < n ; i ++ )
     {
-        for (int r = 0; r < v[i]; ++ r)
+        int v , w , s;
+        cin >> v >> w >> s;
+        memcpy(g , f , sizeof f);
+        for(int j = 0 ; j < v ; j ++ )         // 枚举余数
         {
-            int hh = 0, tt = -1;
-            for (int j = r; j <= m; j += v[i])
+            int hh = 0 , tt = -1;
+            for(int k = j ; k <= m ; k += v)          // 遍历余数为j的体积
             {
-                while (hh <= tt && j - q[hh] > s[i] * v[i]) hh ++ ;
-                while (hh <= tt && f[(i - 1) & 1][q[tt]] + (j - q[tt]) / v[i] * w[i] <= f[(i - 1) & 1][j]) -- tt;
-                q[ ++ tt] = j;
-                f[i & 1][j] = f[(i - 1) & 1][q[hh]] + (j - q[hh]) / v[i] * w[i];
+                while(hh <= tt && q[hh] < k - s * v)           hh ++ ;
+                while(hh <= tt && g[q[tt]] - (q[tt] - j) / v * w <= g[k] - (k - j) / v * w)   tt --; //如果后一个元素比前面的元素大，则原先的元素没必要留，单调队列的去除冗余操作
+                q[++ tt] = k;
+                f[k] = g[q[hh]] + (k - q[hh]) / v * w;       //增加的收益
             }
         }
     }
-    cout << f[n & 1][m] << endl;
+    cout << f[m] << endl;
     return 0;
 }
